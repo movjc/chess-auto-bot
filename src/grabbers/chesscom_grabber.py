@@ -73,20 +73,26 @@ class ChesscomGrabber(Grabber):
         # Moves that are not pawn moves have a different structure
         # containing children
         if not self.moves_list:
-            # If the moves list is empty, find all moves
-            moves = move_list_elem.find_elements(By.CSS_SELECTOR, "div.move [data-ply]")
+            # If the moves list is empty, find all moves  data-whole-move-number
+            #moves = move_list_elem.find_elements(By.CSS_SELECTOR, "div.move [data-ply]")
+            moves = move_list_elem.find_elements(By.CSS_SELECTOR, "div.node.main-line-ply")
+            #print(moves)
         else:
             # If the moves list is not empty, find only the new moves
-            moves = move_list_elem.find_elements(By.CSS_SELECTOR, "div.move [data-ply]:not([data-processed])")
+            #moves = move_list_elem.find_elements(By.CSS_SELECTOR, "div.move [data-ply]:not([data-processed])")
+            ## //*[@id="scroll-container"]/wc-vertical-move-list/div/div[last()]/div[last()]
+            moves = move_list_elem.find_elements(By.XPATH, "wc-vertical-move-list/div/div[last()]/div[last()]")
 
         for move in moves:
             move_class = move.get_attribute("class")
 
             # Check if it is indeed a move
-            if "white node" in move_class or "black node" in move_class:
+            if "node white" in move_class or "node black" in move_class:
                 # Check if it has a figure
+                # print(move_class)
                 try:
-                    child = move.find_element(By.XPATH, "./*")
+                    # child = move.find_element(By.XPATH, "./*")
+                    child = move.find_element(By.XPATH, "span/span")
                     figure = child.get_attribute("data-figurine")
                 except NoSuchElementException:
                     figure = None
@@ -94,9 +100,13 @@ class ChesscomGrabber(Grabber):
                 # Check if it was en-passant or figure-move
                 if figure is None:
                     # If the moves_list is empty or the last move was not the current move
-                    self.moves_list[move.get_attribute("data-ply")] = move.text
+                    span = move.find_element(By.XPATH,"span")
+                    self.moves_list[span.id] = span.text
+                    print("move_text",move.text)
+                    print(move.get_attribute("data-ply"))
                 elif "=" in move.text:
                     m = move.text + figure
+                    print("m = ",m)
                     # If the move is a check, add the + in the end
                     if "+" in m:
                         m = m.replace("+", "")

@@ -81,12 +81,20 @@ class StockfishBot(multiprocess.Process):
             time.sleep(0.1)
             end_pos_x = None
             end_pos_y = None
-            if move[4] == "n":
-                end_pos_x, end_pos_y = self.move_to_screen_pos(move[2] + str(int(move[3]) - 1))
-            elif move[4] == "r":
-                end_pos_x, end_pos_y = self.move_to_screen_pos(move[2] + str(int(move[3]) - 2))
-            elif move[4] == "b":
-                end_pos_x, end_pos_y = self.move_to_screen_pos(move[2] + str(int(move[3]) - 3))
+            if self.is_white:
+                if move[4] == "n": # knight 表示马
+                    end_pos_x, end_pos_y = self.move_to_screen_pos(move[2] + str(int(move[3]) - 1))
+                elif move[4] == "r": # rook 表示车
+                    end_pos_x, end_pos_y = self.move_to_screen_pos(move[2] + str(int(move[3]) - 2))
+                elif move[4] == "b": # bishop 表示象
+                    end_pos_x, end_pos_y = self.move_to_screen_pos(move[2] + str(int(move[3]) - 3))
+            else:
+                if move[4] == "n": # knight 表示马
+                    end_pos_x, end_pos_y = self.move_to_screen_pos(move[2] + str(int(move[3]) + 1))
+                elif move[4] == "r": # rook 表示车
+                    end_pos_x, end_pos_y = self.move_to_screen_pos(move[2] + str(int(move[3]) + 2))
+                elif move[4] == "b": # bishop 表示象
+                    end_pos_x, end_pos_y = self.move_to_screen_pos(move[2] + str(int(move[3]) + 3))
 
             pyautogui.moveTo(x=end_pos_x, y=end_pos_y)
             pyautogui.click(button='left')

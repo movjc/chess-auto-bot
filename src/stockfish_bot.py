@@ -214,7 +214,14 @@ class StockfishBot(multiprocess.Process):
                                 break
 
                     if not self_moved:
-                        move_san = board.san(chess.Move(chess.parse_square(move[0:2]), chess.parse_square(move[2:4])))
+                        # fix gui show promotion pgn bug
+                        if len(move) > 4:
+                            move_obj = chess.Move(chess.parse_square(move[0:2]), chess.parse_square(move[2:4]),
+                                                  promotion=chess.PIECE_SYMBOLS.index(move[4]))
+                        else:
+                            move_obj = chess.Move(chess.parse_square(move[0:2]), chess.parse_square(move[2:4]))
+                        move_san = board.san(move_obj)
+                        # move_san = board.san(chess.Move(chess.parse_square(move[0:2]), chess.parse_square(move[2:4])))
                         board.push_uci(move)
                         stockfish.make_moves_from_current_position([move])
                         move_list.append(move_san)
